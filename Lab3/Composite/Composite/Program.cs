@@ -95,20 +95,47 @@ public class LightElementNode : LightNode
     }
 }
 
+public class LightImageNode : LightNode
+{
+    private readonly string href;
+
+    public LightImageNode(string href)
+    {
+        this.href = href;
+    }
+
+    public override string OuterHTML
+    {
+        get
+        {
+            string src = href.StartsWith("http://") || href.StartsWith("https://") ? href : "file://" + href;
+            return $"<img src=\"{src}\" />";
+        }
+    }
+
+    public override string InnerHTML => string.Empty;
+}
+
 class Program
 {
     static void Main(string[] args)
     {
         var ul = new LightElementNode("ul", DisplayType.Block, ClosingType.Paired, new List<string> { "nav-list", "main-menu" });
 
-        var items = new[] { "Home", "About","Profile" };
+        var items = new[] { "Home", "About", "Profile" };
         foreach (var item in items)
         {
             var li = new LightElementNode("li", DisplayType.Block, ClosingType.Paired);
             li.AddChild(new LightTextNode(item));
             ul.AddChild(li);
         }
+
         Console.WriteLine(ul.OuterHTML);
 
+        var image = new LightImageNode("D:/Photo/image.jpg");
+        Console.WriteLine(image.OuterHTML);
+
+        var imageUrl = new LightImageNode("https://image.com/image.jpg");
+        Console.WriteLine(imageUrl.OuterHTML);
     }
 }
